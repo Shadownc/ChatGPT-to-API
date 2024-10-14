@@ -5,7 +5,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  workflow_dispatch:    # 添加手动触发选项
+  workflow_dispatch:    # 手动触发
+  release:              # 添加Release触发事件
+    types:
+      - created         # 当新Release创建时触发
 
 jobs:
   build:
@@ -51,8 +54,11 @@ jobs:
           fi
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ./build/freechatgpt-${{ matrix.goos }}-${{ matrix.goarch }}$suffix
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload release artifact
+        uses: svenstaro/upload-release-action@v2 # 使用此插件将文件上传到Release
         with:
-          name: freechatgpt-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: ./build/freechatgpt-${{ matrix.goos }}-${{ matrix.goarch }}*
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub 令牌授权
+          file: ./build/freechatgpt-${{ matrix.goos }}-${{ matrix.goarch }}* # 上传构建产物
+          file_glob: true
+          tag: ${{ github.ref }} # 使用Release的标签作为标识
+          name: freechatgpt-${{ matrix.goos }}-${{ matrix.goarch }} # 指定上传文件名称
