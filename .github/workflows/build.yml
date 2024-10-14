@@ -5,6 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:    # 添加手动触发选项
 
 jobs:
   build:
@@ -25,6 +26,12 @@ jobs:
           - goos: linux
             goarch: amd64
           - goos: linux
+            goarch: arm64
+          - goos: freebsd
+            goarch: 386
+          - goos: freebsd
+            goarch: amd64
+          - goos: freebsd
             goarch: arm64
     steps:
       - name: Checkout code
