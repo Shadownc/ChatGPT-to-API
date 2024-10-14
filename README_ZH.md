@@ -4,6 +4,16 @@
 **模拟API地址: http://127.0.0.1:8080/v1/chat/completions.**
 
 ## 使用
+
+### Docker
+```
+docker run -d -p 8080:8080 --name chatgpttoapi \
+  -e ADMIN_PASSWORD=my_password \
+  -e OPENAI_EMAIL=my_email@example.com \
+  -e OPENAI_PASSWORD=my_openai_password \
+  lmyself/chatgpt-to-api:latest
+
+```
     
 ### 设置
 
