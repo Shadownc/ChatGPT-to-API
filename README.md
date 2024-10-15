@@ -5,6 +5,15 @@ Create a fake API using ChatGPT's website
 > You will not get free support for this repository. This was made for my own personal use and documentation will continue to be limited as I don't really need documentation. You will find more detailed documentation in the Chinese docs by a contributor.
 
 **API endpoint: http://127.0.0.1:8080/v1/chat/completions.**
+```
+curl -X POST 'http://127.0.0.1:8080/v1/chat/completions' \
+  --header 'Content-Type: application/json' \
+  --data-raw $'{
+     "model": "gpt-4o-mini",
+     "messages": [{"role": "user", "content": "你是gpt-4o-mini吗"}],
+     "stream": true
+   }'
+```
 
 [中文文档（Chinese Docs）](https://github.com/xqdoo00o/ChatGPT-to-API/blob/master/README_ZH.md)
 ## Setup
