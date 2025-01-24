@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	arkose "github.com/xqdoo00o/funcaptcha"
 )
 
 var (
@@ -84,6 +83,18 @@ func simulateModel(c *gin.Context) {
 				"created":  1688888888,
 				"owned_by": "chatgpt-to-api",
 			},
+			{
+				"id":       "o1",
+				"object":   "model",
+				"created":  1688888888,
+				"owned_by": "chatgpt-to-api",
+			},
+			{
+				"id":       "o1-mini",
+				"object":   "model",
+				"created":  1688888888,
+				"owned_by": "chatgpt-to-api",
+			},
 		},
 	})
 }
@@ -131,13 +142,6 @@ func nightmare(c *gin.Context) {
 	if chat_require.Proof.Required {
 		proofToken = chatgpt.CalcProofToken(chat_require, proxy_url)
 	}
-	var arkoseToken string
-	if chat_require.Arkose.Required {
-		arkoseToken, err = arkose.GetOpenAIToken(4, secret.PUID, chat_require.Arkose.DX, proxy_url)
-		if err != nil {
-			println("Error getting Arkose token: ", err.Error())
-		}
-	}
 	var turnstileToken string
 	if chat_require.Turnstile.Required {
 		turnstileToken = chatgpt.ProcessTurnstile(chat_require.Turnstile.DX, p)
@@ -145,7 +149,7 @@ func nightmare(c *gin.Context) {
 	// Convert the chat request to a ChatGPT request
 	translated_request := chatgpt_request_converter.ConvertAPIRequest(original_request, account, &secret, deviceId, proxy_url)
 
-	response, err := chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, arkoseToken, proofToken, turnstileToken, proxy_url)
+	response, err := chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, proofToken, turnstileToken, proxy_url)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "error sending request",
@@ -174,16 +178,10 @@ func nightmare(c *gin.Context) {
 		if chat_require.Proof.Required {
 			proofToken = chatgpt.CalcProofToken(chat_require, proxy_url)
 		}
-		if chat_require.Arkose.Required {
-			arkoseToken, err = arkose.GetOpenAIToken(4, secret.PUID, chat_require.Arkose.DX, proxy_url)
-			if err != nil {
-				println("Error getting Arkose token: ", err.Error())
-			}
-		}
 		if chat_require.Turnstile.Required {
 			turnstileToken = chatgpt.ProcessTurnstile(chat_require.Turnstile.DX, p)
 		}
-		response, err = chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, arkoseToken, proofToken, turnstileToken, proxy_url)
+		response, err = chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, proofToken, turnstileToken, proxy_url)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"error": "error sending request",
@@ -222,10 +220,13 @@ var ttsTypeMap = map[string]string{
 
 var ttsVoiceMap = map[string]string{
 	"alloy":   "cove",
+	"ash":     "arbor",
+	"coral":   "vale",
 	"echo":    "ember",
 	"fable":   "breeze",
-	"onyx":    "cove",
-	"nova":    "juniper",
+	"onyx":    "spruce",
+	"nova":    "maple",
+	"sage":    "sol",
 	"shimmer": "juniper",
 }
 
@@ -266,13 +267,6 @@ func tts(c *gin.Context) {
 	if chat_require.Proof.Required {
 		proofToken = chatgpt.CalcProofToken(chat_require, proxy_url)
 	}
-	var arkoseToken string
-	if chat_require.Arkose.Required {
-		arkoseToken, err = arkose.GetOpenAIToken(4, secret.PUID, chat_require.Arkose.DX, proxy_url)
-		if err != nil {
-			println("Error getting Arkose token: ", err.Error())
-		}
-	}
 	var turnstileToken string
 	if chat_require.Turnstile.Required {
 		turnstileToken = chatgpt.ProcessTurnstile(chat_require.Turnstile.DX, p)
@@ -280,7 +274,7 @@ func tts(c *gin.Context) {
 	// Convert the chat request to a ChatGPT request
 	translated_request := chatgpt_request_converter.ConvertTTSAPIRequest(original_request.Input)
 
-	response, err := chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, arkoseToken, proofToken, turnstileToken, proxy_url)
+	response, err := chatgpt.POSTconversation(translated_request, &secret, deviceId, chat_require.Token, proofToken, turnstileToken, proxy_url)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error sending request"})
 		return
